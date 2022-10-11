@@ -1,0 +1,4 @@
+.vscode
+.swagger-codegen
+.git
+*.md

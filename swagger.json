@@ -1,0 +1,410 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "UPDAY: frontend task. This service should provide a basic rest API to be used in the upday frontend task.",
+    "version": "0.0.1",
+    "title": "News Manager",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "thun@upday.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "localhost:8080",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "board",
+      "description": "Supported countries API"
+    },
+    {
+      "name": "news",
+      "description": "News API"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/board": {
+      "get": {
+        "tags": [
+          "board"
+        ],
+        "summary": "List of supported boards",
+        "operationId": "getAllCountries",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Board"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/board/{boardId}/news": {
+      "get": {
+        "tags": [
+          "board"
+        ],
+        "summary": "List of board's news",
+        "operationId": "getNewsFromBoard",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "path",
+            "description": "ID of the board's news",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/BoardNews"
+            }
+          }
+        }
+      }
+    },
+    "/news": {
+      "post": {
+        "tags": [
+          "news"
+        ],
+        "summary": "create a news element",
+        "operationId": "addNews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          },
+          "400": {
+            "description": " - author: Invalid __[invalid email format]__ "
+          },
+          "404": {
+            "description": "the board id is not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "news"
+        ],
+        "summary": "update a news",
+        "description": " update a news element based on the Id.\n\n Only these fields will be updated:\n - author\n - title\n - description\n - imageURL\n ",
+        "operationId": "updateNews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "List of user object",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/News"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          },
+          "400": {
+            "description": " if the news's status is __Draft__ only author will be validated:\n - author: Invalid __[invalid email format]__\n\n if the news's status is __Published__ all fields will be validated:\n - author: Invalid __[invalid email format]__\n - title: Invalid __[can not be blank]__\n - description: Invalid __[can not be blank]__\n - imageURL: Invalid __[can not be blank]__\n "
+          },
+          "404": {
+            "description": "news not found"
+          }
+        }
+      }
+    },
+    "/news/{newsId}": {
+      "get": {
+        "tags": [
+          "news"
+        ],
+        "summary": "Find a News by ID",
+        "operationId": "findNews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "description": "ID of news to return",
+            "required": true,
+            "type": "string",
+            "format": "UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          },
+          "404": {
+            "description": "News not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "news"
+        ],
+        "summary": "Delete a News by ID",
+        "operationId": "deleteNews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "description": "ID of news to delete",
+            "required": true,
+            "type": "string",
+            "format": "UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": {
+            "description": "News not found"
+          }
+        }
+      }
+    },
+    "/news/{newsId}/archive": {
+      "post": {
+        "tags": [
+          "news"
+        ],
+        "summary": "archive a News",
+        "description": " __PS:__ after archive a news element they cannot be updated to a different status. ",
+        "operationId": "archiveNews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "description": "ID of news to archive",
+            "required": true,
+            "type": "string",
+            "format": "UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": {
+            "description": "news not found"
+          }
+        }
+      }
+    },
+    "/news/{newsId}/draft": {
+      "post": {
+        "tags": [
+          "news"
+        ],
+        "summary": "draft a News",
+        "operationId": "drarftNews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "description": "ID of news to draft",
+            "required": true,
+            "type": "string",
+            "format": "UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Archived news cannot be drafted"
+          },
+          "404": {
+            "description": "news not found"
+          }
+        }
+      }
+    },
+    "/news/{newsId}/published": {
+      "post": {
+        "tags": [
+          "news"
+        ],
+        "summary": "publish a News element",
+        "description": " __PS:__ before change the status to published the follow fields will be validate:\n - author\n - title\n - description\n - imageURL\n ",
+        "operationId": "publishNews",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "description": "ID of news to publish",
+            "required": true,
+            "type": "string",
+            "format": "UUID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": " - author: Invalid __[invalid email format]__\n - title: Invalid __[can not be blank]__\n - description: Invalid __[can not be blank]__\n - imageURL: Invalid __[can not be blank]__\n "
+          },
+          "404": {
+            "description": "news not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Board": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "ISO-639-1",
+          "description": "should be the board language in ISO-639",
+          "example": "en"
+        },
+        "name": {
+          "type": "string",
+          "example": "English"
+        }
+      }
+    },
+    "News": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "UUID"
+        },
+        "boardId": {
+          "type": "string",
+          "format": "ISO-639-1",
+          "example": "en"
+        },
+        "author": {
+          "type": "string",
+          "format": "email",
+          "example": "uhuu@upday.com"
+        },
+        "title": {
+          "type": "string",
+          "example": "new title"
+        },
+        "description": {
+          "type": "string",
+          "example": "big description"
+        },
+        "imageURL": {
+          "type": "string",
+          "example": "https://www.upday.com/wp-content/themes/upday/images/upday-logo-black.svg"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "date in UTC when the news was created",
+          "example": "2021-05-31T14:44:16.906519636+02:00"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "archive"
+          ],
+          "default": "draft"
+        }
+      }
+    },
+    "BoardNews": {
+      "type": "object",
+      "properties": {
+        "drafts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/News"
+          }
+        },
+        "published": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/News"
+          }
+        },
+        "archives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/News"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}
